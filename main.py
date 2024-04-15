@@ -1,23 +1,27 @@
-from dotenv import load_dotenv
 import os
-from scripts.input_processing import get_video_idea
+from dotenv import load_dotenv
+from scripts.input_processing import process_input
 from scripts.script_generation import generate_script
 from scripts.voiceover_generation import generate_voiceover
 from scripts.timestamp_subtitle_generation import generate_subtitles
 from scripts.image_generation import generate_images
-from scripts.video_concatenation import create_video
-
-load_dotenv()
-API_KEY = os.getenv('OPENAI_API_KEY')
+from scripts.video_concatenation import concatenate_video
+from scripts.burn_subtitles import burn_subtitles
 
 def main():
-    video_idea = get_video_idea()
-    script = generate_script(video_idea, API_KEY)
-    audio_file = generate_voiceover(script)
-    text, segments = generate_subtitles(audio_file, API_KEY)
-    sentences = [seg['text'] for seg in segments]
-    images = generate_images(sentences, API_KEY)
-    create_video(images, audio_file, sentences)
+    load_dotenv()
+    openai_key = os.getenv("OPENAI_API_KEY")
+    assemblyai_key = os.getenv("ASSEMBLYAI_API_KEY")
+    
+    video_idea = process_input()
+    script = generate_script(video_idea, openai_key)
+    voiceover_file = generate_voiceover(script)
+    subtitles_file = generate_subtitles(assemblyai_key, voiceover_file)
+    images = generate_images(script, openai_key)
+    video_file = concatenate_video(images, voiceover_file)
+    final_video = burn_subtitles(video_file, subtitles_file)
+
+    print("Video creation complete:", final_video)
 
 if __name__ == "__main__":
     main()

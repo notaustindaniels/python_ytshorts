@@ -1,9 +1,15 @@
-import openai
+import assemblyai
+import os
 
-def generate_subtitles(audio_file, api_key):
-    openai.api_key = api_key
-    response = openai.Audio.transcribe(
-        model="whisper-large",
-        file=open(audio_file, "rb")
-    )
-    return response['text'], response['segments']
+def generate_subtitles(api_key, filename="voiceover.mp3"):
+    assemblyai.api_key = api_key
+
+    # Create a transcriber object and transcribe the audio file
+    transcript = assemblyai.Transcriber().transcribe(filename)
+    subtitles = transcript.export_subtitles_srt()
+
+    # Save subtitles to file
+    with open("subtitles.srt", "w") as f:
+        f.write(subtitles)
+
+    return "subtitles.srt"

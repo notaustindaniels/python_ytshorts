@@ -1,14 +1,19 @@
-import openai
+from openai import OpenAI
 
-def generate_images(sentences, api_key):
-    openai.api_key = api_key
+def generate_images(script, api_key):
+    client = OpenAI(api_key=api_key)
+    sentences = script.split('.')
     images = []
-    for sentence in sentences:
-        response = openai.Image.create(
+
+    for idx, sentence in enumerate(sentences):
+        response = client.images.generate(
+            model="dall-e-3",
             prompt=sentence,
             n=1,
             size="1024x1024",
-            model="dall-e-2"
+            quality="standard"
         )
-        images.append(response['data'][0]['url'])  # Assuming URL handling for simplicity
+        image_url = response.data[0].url
+        images.append(image_url)
+
     return images
