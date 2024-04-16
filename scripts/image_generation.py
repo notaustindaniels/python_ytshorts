@@ -12,7 +12,7 @@ def generate_images(script, api_key):
                 model="dall-e-3",
                 prompt=sentence,
                 n=1,
-                size="1024x1024",
+                size="1024x1792",
                 quality="standard"
             )
             image_url = response.data[0].url
