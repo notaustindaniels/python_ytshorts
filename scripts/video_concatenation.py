@@ -1,9 +1,27 @@
-from moviepy.editor import ImageSequenceClip, AudioFileClip, concatenate_videoclips
+from moviepy.editor import VideoFileClip, ImageClip, concatenate_videoclips, CompositeVideoClip, AudioFileClip
+import json
 
-def concatenate_video(images, audio_filename):
-    clip = ImageSequenceClip(images, fps=1)  # 1 frame per second
-    audio = AudioFileClip(audio_filename)
-    final_clip = clip.set_audio(audio)
-    final_clip.write_videofile("final_video.mp4", codec="libx264")
+def concatenate_video(images, durations_file, voiceover_filename):
+    # Load durations from JSON file
+    with open(durations_file, 'r') as f:
+        durations = json.load(f)
 
-    return "final_video.mp4"
+    clips = []
+    # Load the voiceover as the base audio clip
+    audio_clip = AudioFileClip(voiceover_filename)
+    
+    # Process each image and its duration
+    for item in durations:
+        image_path = next((img['image_path'] for img in images if img['image_id'] == item['image_id']), None)
+        if image_path:
+            # Create an image clip with the specified duration
+            image_clip = ImageClip(image_path).set_duration(item['end'] - item['start']).set_start(item['start']).set_audio(audio_clip.subclip(item['start'], item['end']))
+            clips.append(image_clip)
+
+    # Combine all clips into a single video
+    final_clip = concatenate_videoclips(clips, method="compose")
+    final_clip = final_clip.set_audio(audio_clip)
+    final_video_path = "final_video.mp4"
+    final_clip.write_videofile(final_video_path, codec='libx264', audio_codec='aac')
+    
+    return final_video_path

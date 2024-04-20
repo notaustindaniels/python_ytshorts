@@ -1,27 +1,46 @@
-import os
 from dotenv import load_dotenv
+import os
+import json
+
+# Import custom scripts
 from scripts.input_processing import process_input
 from scripts.script_generation import generate_script
 from scripts.voiceover_generation import generate_voiceover
 from scripts.timestamp_subtitle_generation import generate_subtitles
-from scripts.image_generation import generate_images
+from scripts.image_segment_generator.select_segments import select_segments
+from scripts.image_segment_generator.assign_durations import assign_durations
+from scripts.image_segment_generator.generate_prompts import generate_prompts
+from scripts.image_segment_generator.generate_images import generate_images
 from scripts.video_concatenation import concatenate_video
 from scripts.burn_subtitles import burn_subtitles
 
 def main():
     load_dotenv()
-    openai_key = os.getenv("OPENAI_API_KEY")
-    assemblyai_key = os.getenv("ASSEMBLYAI_API_KEY")
-    
+    OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
+    ASSEMBLYAI_API_KEY = os.getenv('ASSEMBLYAI_API_KEY')
+
     video_idea = process_input()
-    script = generate_script(video_idea, openai_key)
-    voiceover_file = generate_voiceover(script)
-    subtitles_file = generate_subtitles(assemblyai_key, voiceover_file)
-    images = generate_images(script, openai_key)
-    video_file = concatenate_video(images, voiceover_file)
-    final_video = burn_subtitles(video_file, subtitles_file)
+    script = generate_script(video_idea, OPENAI_API_KEY)
 
-    print("Video creation complete:", final_video)
+    script_filename = 'script.txt'
+    with open(script_filename, 'w', encoding='utf-8') as file:
+        file.write(script)
 
-if __name__ == "__main__":
+    voiceover_filename = generate_voiceover(script)
+    subtitle_filename = generate_subtitles(ASSEMBLYAI_API_KEY, voiceover_filename)
+
+    segments = select_segments(script_filename, subtitle_filename, OPENAI_API_KEY)
+    durations = assign_durations(segments)
+    # Save durations to JSON if not already a file
+    durations_file = 'durations.json'
+    with open(durations_file, 'w') as f:
+        json.dump(durations, f)
+    
+    prompts = generate_prompts(segments)
+    images = generate_images(prompts)
+
+    final_video = concatenate_video(images, durations_file, voiceover_filename)
+    final_video_with_subtitles = burn_subtitles(final_video, subtitle_filename)
+
+if __name__ == '__main__':
     main()

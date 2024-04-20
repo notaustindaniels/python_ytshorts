@@ -1,23 +1,26 @@
-from moviepy.editor import VideoFileClip, CompositeVideoClip, TextClip
-from moviepy.video.tools.subtitles import SubtitlesClip
+from moviepy.editor import VideoFileClip, TextClip, CompositeVideoClip
+import pysrt
 
-def make_subtitle_clip(txt, fontsize=100, color='yellow', font='./fonts/bold_font.ttf'):
-    # Helper function to style subtitles
-    return TextClip(txt, fontsize=fontsize, color=color, font=font, stroke_color='black', stroke_width=5, method='caption')
-
-def burn_subtitles(video_filename, subtitles_filename):
+def burn_subtitles(video_filename, subtitle_filename):
+    # Load video clip
     video = VideoFileClip(video_filename)
-    # Set video to 30fps
-    video = video.set_fps(30)
+    # Load subtitles
+    subs = pysrt.open(subtitle_filename)
 
-    # Generate subtitles clip
-    subtitles = SubtitlesClip(subtitles_filename, make_textclip=make_subtitle_clip)
+    # Generate subtitle clips
+    subtitles = []
+    for sub in subs:
+        # Create a text clip for each subtitle
+        txt_clip = TextClip(sub.text, fontsize=24, color='white', font='Arial-Bold')
+        txt_clip = txt_clip.set_position('bottom').set_duration(sub.end.ordinal - sub.start.ordinal) \
+                   .set_start(sub.start.ordinal / 1000)  # Convert to seconds
+        subtitles.append(txt_clip)
 
-    # Set the duration of the subtitles clip to the duration of the video
-    subtitles = subtitles.set_duration(video.duration)
+    # Overlay subtitles on the original video
+    final = CompositeVideoClip([video] + subtitles)
 
-    # Composite video clip with subtitles
-    final_video = CompositeVideoClip([video, subtitles.set_position(('center', 'center'))])
-    final_video.write_videofile("final_video_with_subtitles.mp4", codec="libx264", fps=30)  # Ensure output is also 30fps
+    # Write the result to a file
+    final_video_path = "final_video_with_subtitles.mp4"
+    final.write_videofile(final_video_path, codec="libx264", audio_codec='aac')
 
-    return "final_video_with_subtitles.mp4"
+    return final_video_path
