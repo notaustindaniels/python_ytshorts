@@ -14,12 +14,6 @@ def select_segments(script_path, srt_path, api_key):
     
     # Constructing the prompt
     prompt = f"""
-Read the script and the provided timestamps. Output a JSON list of segments of the script where each segment is determined by its potential to be represented by a single artistic image. For each segment, include the script segment, the start time, and the end time. The JSON output should be formatted as follows:
-
-[{{'text': 'script_portion/script_segment', 'start': 'start_time', 'end': 'end_time'}}, ...]
-
-ONLY RESPOND WITH JSON.
-
 Script:
 {script_content}
 
@@ -31,7 +25,13 @@ Timestamps:
     response = openai.chat.completions.create(
         model="gpt-3.5-turbo",
         messages=[
-            {"role": "system", "content": "You are a movie director, choosing parts of a script that can be captured as one cohesive image."},
+            {"role": "system", "content": """
+Read the script and the provided timestamps. Output a JSON list of segments of the script where each segment is determined by its potential to be represented by a single artistic image. For each segment, include the script segment, the start time, and the end time. The JSON output should be formatted as follows:
+
+[{{'text': 'script_portion/script_segment', 'start': 'start_time', 'end': 'end_time'}}, ...]
+
+YOU ONLY RESPOND WITH JSON.
+"""},
             {"role": "user", "content": prompt}
         ],
         max_tokens=1500
