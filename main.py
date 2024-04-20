@@ -31,13 +31,12 @@ def main():
 
     segments = select_segments(script_filename, subtitle_filename, OPENAI_API_KEY)
     durations = assign_durations(segments)
-    # Save durations to JSON if not already a file
     durations_file = 'durations.json'
     with open(durations_file, 'w') as f:
         json.dump(durations, f)
-    
+
     prompts = generate_prompts(segments)
-    images = generate_images(prompts)
+    images = generate_images(prompts, OPENAI_API_KEY)
 
     final_video = concatenate_video(images, durations_file, voiceover_filename)
     final_video_with_subtitles = burn_subtitles(final_video, subtitle_filename)

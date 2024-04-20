@@ -17,6 +17,10 @@ def concatenate_video(images, durations_file, voiceover_filename):
             # Create an image clip with the specified duration
             image_clip = ImageClip(image_path).set_duration(item['end'] - item['start']).set_start(item['start']).set_audio(audio_clip.subclip(item['start'], item['end']))
             clips.append(image_clip)
+    
+    if not clips:
+        print("No video clips were created. Check earlier steps.")
+        return None
 
     # Combine all clips into a single video
     final_clip = concatenate_videoclips(clips, method="compose")

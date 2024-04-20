@@ -30,7 +30,10 @@ Timestamps:
     # Making the API call to ChatGPT model
     response = openai.chat.completions.create(
         model="gpt-3.5-turbo",
-        messages=[{"role": "user", "content": prompt}],
+        messages=[
+            {"role": "system", "content": "You are a movie director, choosing parts of a script that can be captured as one cohesive image."},
+            {"role": "user", "content": prompt}
+        ],
         max_tokens=1500
     )
     
