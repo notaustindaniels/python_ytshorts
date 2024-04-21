@@ -1,4 +1,4 @@
-#!/Users/austin/python_ytshorts/myvenv/bin/python3.11
+#!/Users/austin/python_ytshorts/myvenv/bin/python
 # -*- coding: utf-8 -*-
 import re
 import sys

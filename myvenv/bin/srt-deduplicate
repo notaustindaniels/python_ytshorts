@@ -1,4 +1,4 @@
-#!/Users/austin/python_ytshorts/myvenv/bin/python3.11
+#!/Users/austin/python_ytshorts/myvenv/bin/python
 
 """Deduplicate repeated subtitles."""
 

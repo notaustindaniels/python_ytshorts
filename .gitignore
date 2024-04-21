@@ -5,3 +5,6 @@ __pycache__/
 *.aiff
 *.srt
 temp_*
+*.png
+*.m4a
+*.mp4

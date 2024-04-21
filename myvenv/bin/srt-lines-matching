@@ -1,4 +1,4 @@
-#!/Users/austin/python_ytshorts/myvenv/bin/python3.11
+#!/Users/austin/python_ytshorts/myvenv/bin/python
 
 """Filter subtitles that match or don't match a particular pattern."""
 

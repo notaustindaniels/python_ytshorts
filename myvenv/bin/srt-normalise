@@ -1,4 +1,4 @@
-#!/Users/austin/python_ytshorts/myvenv/bin/python3.11
+#!/Users/austin/python_ytshorts/myvenv/bin/python
 
 """Takes a badly formatted SRT file and outputs a strictly valid one."""
 

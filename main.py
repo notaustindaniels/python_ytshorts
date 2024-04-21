@@ -2,7 +2,6 @@ from dotenv import load_dotenv
 import os
 import json
 
-# Import custom scripts
 from scripts.input_processing import process_input
 from scripts.script_generation import generate_script
 from scripts.voiceover_generation import generate_voiceover
