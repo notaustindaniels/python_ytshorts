@@ -1,5 +1,18 @@
+from dotenv import load_dotenv
+import os
+import json
+
+from scripts.script_generation import generate_script
+from scripts.voiceover_generation import generate_voiceover
+from scripts.timestamp_subtitle_generation import generate_subtitles
+from scripts.image_segment_generator.select_segments import select_segments
+from scripts.image_segment_generator.assign_durations import assign_durations
+from scripts.image_segment_generator.generate_prompts import generate_prompts
+from scripts.image_segment_generator.generate_images import generate_images
+from scripts.video_concatenation import concatenate_video
+from scripts.burn_subtitles import burn_subtitles
+
 from scripts.input_processing import process_audio_input, process_script_input
-# Other imports remain the same
 
 def main():
     load_dotenv()
