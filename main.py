@@ -13,6 +13,9 @@ from scripts.image_segment_generator.generate_images import generate_images
 from scripts.video_concatenation import concatenate_video
 from scripts.burn_subtitles import burn_subtitles
 
+from scripts.input_processing import process_audio_input, process_script_input
+# Other imports remain the same
+
 def main():
     load_dotenv()
     OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
@@ -22,27 +25,18 @@ def main():
         print("API keys are not set correctly.")
         return
 
-    video_idea = process_input()
-    script = generate_script(video_idea, OPENAI_API_KEY)
-    if not script:
-        print("Script generation failed.")
-        return
+    # Obtain audio file path and script file path from user input
+    audio_file_path = process_audio_input()
+    script_file_path = process_script_input()
 
-    script_filename = 'script.txt'
-    with open(script_filename, 'w', encoding='utf-8') as file:
-        file.write(script)
-
-    voiceover_filename = generate_voiceover(script)
-    if not voiceover_filename:
-        print("Voiceover generation failed.")
-        return
-
-    subtitle_filename = generate_subtitles(ASSEMBLYAI_API_KEY, voiceover_filename)
+    # Generate subtitles directly from the user-provided voiceover
+    subtitle_filename = generate_subtitles(ASSEMBLYAI_API_KEY, audio_file_path)
     if not subtitle_filename:
         print("Subtitle generation failed.")
         return
 
-    segments = select_segments(script_filename, subtitle_filename, OPENAI_API_KEY)
+    # Use the provided script file path directly for segment selection
+    segments = select_segments(script_file_path, subtitle_filename, OPENAI_API_KEY)
     if not segments:
         print("Segment selection failed.")
         return
@@ -58,7 +52,7 @@ def main():
         print("Image generation failed.")
         return
 
-    final_video = concatenate_video(images, durations_file, voiceover_filename)
+    final_video = concatenate_video(images, durations_file, audio_file_path)
     if not final_video:
         print("Video concatenation failed.")
         return
@@ -70,3 +64,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+
