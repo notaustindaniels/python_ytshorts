@@ -13,6 +13,6 @@ def burn_subtitles(video_filename, subtitle_filename):
 
     final = CompositeVideoClip([video] + subtitles)
     final_video_path = "final_video_with_subtitles.mp4"
-    final.write_videofile(final_video_path, codec="libx264", audio_codec='aac')
+    final.write_videofile(final_video_path, fps=60, threads=2)
 
     return final_video_path

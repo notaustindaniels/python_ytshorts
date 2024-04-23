@@ -39,7 +39,7 @@ def concatenate_video(images, durations_file, voiceover_filename):
 
     final_clip = video_clip.set_audio(audio_clip)
     final_video_path = "final_video.mp4"
-    final_clip.write_videofile(final_video_path, fps=30, threads=2)
+    final_clip.write_videofile(final_video_path, fps=60, threads=2)
     print("Video creation complete, file saved to:", final_video_path)
     
     return final_video_path

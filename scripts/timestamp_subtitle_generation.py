@@ -3,31 +3,25 @@ import os
 import srt_equalizer
 
 def generate_subtitles(api_key, filename="voiceover.mp3"):
-    assemblyai.api_key = api_key
+    client = assemblyai.Client(api_key=api_key)  # Initialize the API client with your API key
 
-    # Create a transcriber object and transcribe the audio file
-    transcript = assemblyai.Transcriber().transcribe(filename)
-    subtitles = transcript.export_subtitles_srt()
+    # Upload the audio file and get the URL
+    audio_url = client.upload(filename=filename)
 
-    # Save original subtitles to a temporary file
-    temp_srt_path = "temp_subtitles.srt"
-    with open(temp_srt_path, "w") as f:
+    # Request transcription of the uploaded audio file, enabling word timestamps
+    transcript = client.transcribe(audio_url=audio_url, word_timestamps=True)
+
+    # Check the status of the transcription until it's complete
+    while transcript['status'] != 'completed':
+        transcript = client.get_transcript(transcript['id'])
+        time.sleep(5)  # Pause the loop for 5 seconds before checking again
+
+    # Export the completed transcription to SRT format
+    subtitles = client.export_transcript(transcript['id'], format='srt')
+
+    # Save the subtitles to a file
+    output_srt_path = "subtitles.srt"
+    with open(output_srt_path, "w") as f:
         f.write(subtitles)
 
-    # Equalize the subtitles
-    equalize_subtitles(temp_srt_path, "subtitles.srt", max_chars=10)
-
-    return "subtitles.srt"
-
-def equalize_subtitles(input_srt_path: str, output_srt_path: str, max_chars: int = 10) -> None:
-    """
-    Adjust subtitles to have a maximum number of characters per line using srt_equalizer.
-
-    Args:
-        input_srt_path (str): Path to the input SRT file.
-        output_srt_path (str): Path to the output SRT file.
-        max_chars (int): Maximum number of characters per subtitle line.
-    """
-    # Using the srt_equalizer to adjust subtitle line length
-    srt_equalizer.equalize_srt_file(input_srt_path, output_srt_path, max_chars, method='greedy')
-
+    return output_srt_path
