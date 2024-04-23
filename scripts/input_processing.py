@@ -1,7 +1,4 @@
-def process_audio_input():
-    audio_file_path = input("Enter the path to your audio file: ")
-    return audio_file_path
-
-def process_script_input():
-    script_file_path = input("Enter the path to your script file: ")
-    return script_file_path
+def process_inputs():
+    audio_filepath = input("Enter the path to your audio file: ")
+    script_filepath = input("Enter the path to your script file: ")
+    return audio_filepath, script_filepath

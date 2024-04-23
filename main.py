@@ -2,6 +2,7 @@ from dotenv import load_dotenv
 import os
 import json
 
+from scripts.input_processing import process_inputs
 from scripts.script_generation import generate_script
 from scripts.voiceover_generation import generate_voiceover
 from scripts.timestamp_subtitle_generation import generate_subtitles
@@ -12,8 +13,6 @@ from scripts.image_segment_generator.generate_images import generate_images
 from scripts.video_concatenation import concatenate_video
 from scripts.burn_subtitles import burn_subtitles
 
-from scripts.input_processing import process_audio_input, process_script_input
-
 def main():
     load_dotenv()
     OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
@@ -23,18 +22,19 @@ def main():
         print("API keys are not set correctly.")
         return
 
-    # Obtain audio file path and script file path from user input
-    audio_file_path = process_audio_input()
-    script_file_path = process_script_input()
+    audio_filepath, script_filepath = process_inputs()
+    if not os.path.exists(audio_filepath) or not os.path.exists(script_filepath):
+        print("Audio file or script file does not exist.")
+        return
 
-    # Generate subtitles directly from the user-provided voiceover
-    subtitle_filename = generate_subtitles(ASSEMBLYAI_API_KEY, audio_file_path)
+    voiceover_filename = audio_filepath  # Since the voiceover is already provided
+
+    subtitle_filename = generate_subtitles(ASSEMBLYAI_API_KEY, voiceover_filename)
     if not subtitle_filename:
         print("Subtitle generation failed.")
         return
 
-    # Use the provided script file path directly for segment selection
-    segments = select_segments(script_file_path, subtitle_filename, OPENAI_API_KEY)
+    segments = select_segments(script_filepath, subtitle_filename, OPENAI_API_KEY)
     if not segments:
         print("Segment selection failed.")
         return
@@ -50,7 +50,7 @@ def main():
         print("Image generation failed.")
         return
 
-    final_video = concatenate_video(images, durations_file, audio_file_path)
+    final_video = concatenate_video(images, durations_file, voiceover_filename)
     if not final_video:
         print("Video concatenation failed.")
         return
