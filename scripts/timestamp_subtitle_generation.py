@@ -1,4 +1,5 @@
 import assemblyai
+import time
 import os
 import srt_equalizer
 
