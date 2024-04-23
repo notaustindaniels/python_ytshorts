@@ -7,6 +7,7 @@ from scripts.script_generation import generate_script
 from scripts.voiceover_generation import generate_voiceover
 from scripts.timestamp_subtitle_generation import generate_subtitles
 from scripts.image_segment_generator.select_segments import select_segments
+from scripts.image_segment_generator.assign_durations import assign_durations
 from scripts.image_segment_generator.generate_prompts import generate_prompts
 from scripts.image_segment_generator.generate_images import generate_images
 from scripts.video_concatenation import concatenate_video
@@ -46,13 +47,18 @@ def main():
         print("Segment selection failed.")
         return
 
+    durations = assign_durations(segments)
+    durations_file = 'durations.json'
+    with open(durations_file, 'w') as f:
+        json.dump(durations, f)
+
     prompts = generate_prompts(segments, OPENAI_API_KEY)
     images = generate_images(prompts, OPENAI_API_KEY)
     if not images:
         print("Image generation failed.")
         return
 
-    final_video = concatenate_video(images, subtitle_filename, voiceover_filename)
+    final_video = concatenate_video(images, durations_file, voiceover_filename)
     if not final_video:
         print("Video concatenation failed.")
         return
