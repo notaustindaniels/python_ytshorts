@@ -1,5 +1,6 @@
 import openai
 import json
+import os
 
 def select_segments(script_path, srt_path, api_key):
     openai.api_key = api_key
@@ -14,35 +15,41 @@ def select_segments(script_path, srt_path, api_key):
     
     # Constructing the prompt
     prompt = f"""
-Script:
-{script_content}
+    Script:
+    {script_content}
 
-Timestamps:
-{srt_content}
-"""
-
+    Timestamps:
+    {srt_content}
+    """
+    
     # Making the API call to ChatGPT model
     response = openai.chat.completions.create(
         model="gpt-3.5-turbo",
         messages=[
             {"role": "system", "content": """
-Read the script and the provided timestamps. Output a JSON list of segments of the script where each segment is determined by its potential to be represented by a single artistic image. For each segment, include the script segment, the start time, and the end time. The JSON output should be formatted as follows:
+                Read the script and the provided timestamps. Output a JSON list of segments of the script where each segment is determined by its potential to be represented by a single artistic image. For each segment, include the script segment, the start time, and the end time. The JSON output should be formatted as follows:
 
-[{{'text': 'script_portion/script_segment', 'start': 'start_time', 'end': 'end_time'}}, ...]
+                [{'text': 'script_portion/script_segment', 'start': 'start_time', 'end': 'end_time'}, ...]
 
-YOU ONLY RESPOND WITH JSON.
-"""},
+                YOU ONLY RESPOND WITH JSON.
+            """},
             {"role": "user", "content": prompt}
         ],
         max_tokens=1500
     )
     
-    # Attempt to parse the JSON response from ChatGPT
+    # Parse the JSON response from ChatGPT
     try:
-        # Correctly accessing the response data
         segments = json.loads(response.choices[0].message.content)
     except json.JSONDecodeError:
         print("Failed to decode JSON. Check the model's response.")
         segments = []
-
+    
+    # Save timestamps to a text file
+    with open('segments_timestamps.txt', 'w') as f:
+        for segment in segments:
+            start_time = segment.get('start')
+            end_time = segment.get('end')
+            f.write(f"Segment from {start_time} to {end_time}\n")
+    
     return segments
