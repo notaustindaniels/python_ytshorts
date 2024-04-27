@@ -33,32 +33,44 @@ def main():
     if not subtitle_filename:
         print("Subtitle generation failed.")
         return
+    else:
+        print("Subtitle generation successful.")
 
     segments = select_segments(script_filepath, subtitle_filename, OPENAI_API_KEY)
     if not segments:
         print("Segment selection failed.")
         return
+    else:
+        print("Segment selection successful.")
 
     durations = assign_durations(segments)
     durations_file = 'durations.json'
     with open(durations_file, 'w') as f:
         json.dump(durations, f)
+        print("Durations assigned and saved.")
 
     prompts = generate_prompts(segments, OPENAI_API_KEY)
     images = generate_images(prompts, OPENAI_API_KEY)
     if not images:
         print("Image generation failed.")
         return
+    else:
+        print("Images generated successfully.")
 
     final_video = concatenate_video(images, durations_file, voiceover_filename)
     if not final_video:
         print("Video concatenation failed.")
         return
+    else:
+        print("Video concatenation successful.")
 
     final_video_with_subtitles = burn_subtitles(final_video, subtitle_filename)
     if not final_video_with_subtitles:
         print("Subtitle burning failed.")
         return
+    else:
+        print("Subtitles burned into video successfully.")
+
 
 if __name__ == '__main__':
     main()

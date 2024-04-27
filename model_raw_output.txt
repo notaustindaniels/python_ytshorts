@@ -1,0 +1,8 @@
+[
+{"text": "You know that feeling when you're not sure if you're being followed, or it's just your mind playing tricks? That's where I'm at.", "start": "00:00:00,200", "end": "00:00:05,870"},
+{"text": "Last night, just past midnight, I noticed this weird, static noise on my phone whenever I made calls.", "start": "00:00:07,078", "end": "00:00:12,558"},
+{"text": "Then, as I'm walking home, every street light above me flickers out as I pass under it.", "start": "00:00:12,646", "end": "00:00:16,030"},
+{"text": "I tried to laugh it off, like, 'Okay, what are the odds, right?'", "start": "00:00:16,102", "end": "00:00:18,782"},
+{"text": "But when I got home, there was this envelope on my doorstep—no name, just this cryptic note inside about 'watching' and 'knowing.'", "start": "00:00:18,918", "end": "00:00:27,226"},
+{"text": "It's probably nothing, just some kids messing around, but why do I feel like someone's got their eyes on me, you know? It's kinda freaking me out.", "start": "00:00:27,810", "end": "00:00:35,314"}
+]
