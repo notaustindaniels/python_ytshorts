@@ -1,4 +1,3 @@
-# select_segments.py
 import openai
 import json
 
