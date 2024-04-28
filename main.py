@@ -3,8 +3,8 @@ import os
 import json
 
 from scripts.input_processing import process_inputs
-from scripts.script_generation import generate_script
-from scripts.voiceover_generation import generate_voiceover
+# from scripts.script_generation import generate_script
+# from scripts.voiceover_generation import generate_voiceover
 from scripts.timestamp_subtitle_generation import generate_subtitles
 from scripts.image_segment_generator.select_segments import select_segments
 from scripts.image_segment_generator.assign_durations import assign_durations
