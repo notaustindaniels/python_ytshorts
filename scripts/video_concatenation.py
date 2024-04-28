@@ -23,18 +23,22 @@ def concatenate_video(images, durations_file, voiceover_filename):
     print(f"Loaded audio file with duration: {audio_clip.duration} seconds")
 
     clips = []
-    max_duration = 0.0
+    current_start_time = 0.0  # This will keep track of when the last clip ended
 
     for item in durations:
         image_path = next((img['image_path'] for img in images if img['image_id'] == item['image_id']), None)
         if image_path and os.path.isfile(image_path):
             try:
-                start_time = parse_time(item['start'])  # Convert time string to float
                 end_time = parse_time(item['end'])
+                if not clips:  # If it's the first clip
+                    start_time = parse_time(item['start'])  # Use the start time from the file for the first clip
+                else:
+                    start_time = current_start_time  # Subsequent clips start right after the previous one ends
+
                 clip_duration = end_time - start_time
                 image_clip = ImageClip(image_path).set_duration(clip_duration).set_start(start_time)
                 clips.append(image_clip)
-                max_duration = max(max_duration, end_time)
+                current_start_time = end_time  # Update the start time for the next clip
             except Exception as e:
                 print(f"Error processing time data for {item['image_id']}: {e}")
 
@@ -42,15 +46,18 @@ def concatenate_video(images, durations_file, voiceover_filename):
         print("No video clips were created.")
         return None
 
-    video_clip = concatenate_videoclips(clips, method="compose").set_duration(max_duration)
+    video_clip = concatenate_videoclips(clips, method="compose")
 
-    # Adjust the audio clip's duration to match the video's duration
-    if audio_clip.duration > max_duration:
-        audio_clip = audio_clip.subclip(0, max_duration)
+    # Ensure the final clip extends to the end of the audio if necessary
+    final_end_time = max(current_start_time, audio_clip.duration)
+    last_clip = clips[-1]
+    extended_duration = final_end_time - last_clip.start
+    extended_last_clip = last_clip.set_duration(extended_duration)
+    clips[-1] = extended_last_clip  # Replace the last clip with the extended version
 
-    final_clip = video_clip.set_audio(audio_clip)
+    video_clip = concatenate_videoclips(clips, method="compose").set_audio(audio_clip)
     final_video_path = "final_video.mp4"
-    final_clip.write_videofile(final_video_path, fps=30, threads=2)
+    video_clip.write_videofile(final_video_path, fps=30, threads=2)
     print(f"Video creation complete, file saved to: {final_video_path}")
 
     return final_video_path
