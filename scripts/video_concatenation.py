@@ -4,21 +4,11 @@ import json
 
 def parse_time(time_str):
     """
-    Parses time in format HH:MM:SS or HH:MM:SS,ms and returns total seconds as a float.
-    Handles time strings with and without milliseconds.
+    Converts a time string of the format "HH:MM:SS,ms" to total seconds as a float.
     """
-    parts = time_str.split(':')
-    hours, minutes = int(parts[0]), int(parts[1])
-    seconds_parts = parts[2].split(',')  # Split seconds and milliseconds if milliseconds are present
-    seconds = float(seconds_parts[0])  # Convert seconds to float
-
-    if len(seconds_parts) > 1:
-        milliseconds = int(seconds_parts[1])
-        total_seconds = 3600 * hours + 60 * minutes + seconds + milliseconds / 1000.0
-    else:
-        total_seconds = 3600 * hours + 60 * minutes + seconds
-
-    return total_seconds
+    hours, minutes, seconds_ms = time_str.split(':')
+    seconds, milliseconds = seconds_ms.split(',')
+    return int(hours) * 3600 + int(minutes) * 60 + int(seconds) + int(milliseconds) / 1000.0
 
 def concatenate_video(images, durations_file, voiceover_filename):
     print(f"Loading durations file: {durations_file}")

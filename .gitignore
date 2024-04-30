@@ -9,3 +9,4 @@ temp_*
 *.m4a
 *.mp4
 durations.json
+model_raw_output.txt

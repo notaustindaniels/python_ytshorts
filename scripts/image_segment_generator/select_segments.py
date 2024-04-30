@@ -31,6 +31,8 @@ Read the script and the provided timestamps. Output a JSON list of segments of t
 
 [{{'text': 'script_portion/script_segment', 'start': 'start_time', 'end': 'end_time'}}, ...]
 
+The start time of each segment should be the end time of the previous segment, with the exception of the first segment, because it doesn't have a previous segment.
+
 YOU ONLY RESPOND WITH JSON.
 """}, {
                 "role": "user", "content": prompt
