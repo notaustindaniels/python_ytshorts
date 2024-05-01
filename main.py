@@ -8,7 +8,7 @@ from scripts.image_segment_generator.select_segments import select_segments
 from scripts.image_segment_generator.assign_durations import assign_durations
 from scripts.image_segment_generator.generate_prompts import generate_prompts
 from scripts.image_segment_generator.generate_images import generate_images
-from scripts.video_concatenation import concatenate_video
+from scripts.video_processing.video_concatenation import concatenate_video
 from scripts.burn_subtitles import burn_subtitles
 
 def main():
@@ -68,7 +68,6 @@ def main():
         return
     else:
         print("Subtitles burned into video successfully.")
-
 
 if __name__ == '__main__':
     main()
