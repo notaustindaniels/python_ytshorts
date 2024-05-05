@@ -10,5 +10,5 @@ def concatenate_video(images, durations_file, voiceover_filename):
         durations = json.load(f)
 
     clips = create_image_clips(images, durations)
-    final_video_path = build_video(clips, voiceover_filename)
+    final_video_path = build_video(clips, voiceover_filename, durations)  # Pass durations to build_video
     return final_video_path
