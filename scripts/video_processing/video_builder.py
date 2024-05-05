@@ -1,6 +1,6 @@
 from moviepy.editor import concatenate_videoclips, AudioFileClip, CompositeVideoClip, ImageClip
 from moviepy.video.compositing.transitions import slide_in, slide_out
-from .parse_time import parse_time  # Import the parse_time function
+from .parse_time import parse_time
 import os
 
 EFFECT_DURATION = 0.5  # Duration of the slide transition effect
@@ -24,22 +24,23 @@ def build_video(clips, voiceover_filename, durations, output_file="final_video.m
     # Create transitions for each clip
     video_clips = []
     for i, clip in enumerate(resized_clips):
-        start_time = parse_time(durations[i]['start'])  # Use parse_time to convert start time
-        end_time = parse_time(durations[i]['end'])  # Use parse_time to convert end time
-        clip_duration = end_time - start_time
+        end_time = parse_time(durations[i]['end'])
 
         if i == 0:  # First clip
             video_clip = CompositeVideoClip(
-                [clip.set_start(start_time).set_duration(clip_duration).fx(slide_out, duration=EFFECT_DURATION, side="left")]
+                [clip.set_duration(end_time).fx(slide_out, duration=EFFECT_DURATION, side="left")]
             )
         elif i == len(resized_clips) - 1:  # Last clip
+            start_time = parse_time(durations[i - 1]['end']) - EFFECT_DURATION
             video_clip = CompositeVideoClip(
-                [clip.set_start(start_time).set_duration(clip_duration).fx(slide_in, duration=EFFECT_DURATION, side="right")]
+                [clip.set_start(start_time).set_duration(end_time - start_time).fx(slide_in, duration=EFFECT_DURATION, side="right")]
             )
         else:  # Middle clips
-            video_clip = CompositeVideoClip(
-                [clip.set_start(start_time).set_duration(clip_duration).fx(slide_in, duration=EFFECT_DURATION, side="right")]
-            ).fx(slide_out, duration=EFFECT_DURATION, side="left")
+            start_time = parse_time(durations[i - 1]['end']) - EFFECT_DURATION
+            video_clip = CompositeVideoClip([
+                clip.set_start(start_time).set_duration(end_time - start_time).fx(slide_in, duration=EFFECT_DURATION, side="right"),
+                clip.set_duration(end_time - start_time).fx(slide_out, duration=EFFECT_DURATION, side="left")
+            ])
 
         video_clips.append(video_clip)
 
