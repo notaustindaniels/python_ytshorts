@@ -12,7 +12,7 @@ def generate_images(prompts, api_key):
                 model="dall-e-3",
                 prompt=prompt['prompt'],
                 n=1,
-                size="1024x1792"
+                size="1792x1024"
             )
             # Assuming response.data[0] reliably contains the image URL
             image_url = response.data[0].url
