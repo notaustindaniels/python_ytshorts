@@ -24,13 +24,25 @@ def build_video(clips, voiceover_filename, durations, output_file="final_video.m
     # Create transitions for each clip
     video_clips = []
     for i, clip in enumerate(resized_clips):
-        start_time = parse_time(durations[i]['start'])
         end_time = parse_time(durations[i]['end'])
-        clip_duration = end_time - start_time
 
-        if i == len(resized_clips) - 1:  # Last clip
+        if i == 0:  # First clip
+            start_time = 0  # Start the first clip immediately
+            clip_duration = end_time
+            next_clip = resized_clips[i + 1]
+            transition_start_time = end_time - EFFECT_DURATION
+            video_clip = CompositeVideoClip([
+                clip.set_start(start_time).set_duration(clip_duration),
+                clip.set_start(transition_start_time).set_duration(EFFECT_DURATION).fx(slide_out, duration=EFFECT_DURATION, side="left"),
+                next_clip.set_start(transition_start_time).set_duration(EFFECT_DURATION + (parse_time(durations[i + 1]['start']) - end_time)).fx(slide_in, duration=EFFECT_DURATION, side="right")
+            ])
+        elif i == len(resized_clips) - 1:  # Last clip
+            start_time = parse_time(durations[i]['start'])
+            clip_duration = end_time - start_time
             video_clip = clip.set_start(start_time).set_duration(clip_duration)
-        else:  # First and middle clips
+        else:  # Middle clips
+            start_time = parse_time(durations[i]['start'])
+            clip_duration = end_time - start_time
             next_clip = resized_clips[i + 1]
             transition_start_time = end_time - EFFECT_DURATION
             video_clip = CompositeVideoClip([
